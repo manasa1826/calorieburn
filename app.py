@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 import pickle
+import joblib
 import os
 
 # Set page configuration
@@ -12,14 +13,14 @@ st.set_page_config(
 
 # Load the saved model
 working_dir = os.path.dirname(os.path.abspath(__file__))
-model_path = 'saved_models/calorie_model.sav'
+model_path = 'saved_models/calorie.joblib'
 # Debugging: Print the model path
 print(f"Loading model from: {model_path}")
 
 try:
-    calorie_model = pickle.load(model_path)
+    calorie_model = joblib.load(model_path)
 except FileNotFoundError:
-    st.error("Model file not found. Please ensure 'calorie_model.sav' exists in the 'saved_models' directory.")
+    st.error("Model file not found. Please ensure 'calorie.joblib' exists in the 'saved_models' directory.")
     st.stop()
 
 # Page title
