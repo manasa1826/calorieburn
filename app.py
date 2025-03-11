@@ -12,7 +12,7 @@ st.set_page_config(
 
 # Load the saved model
 working_dir = os.path.dirname(os.path.abspath(__file__))
-calorie_model = pickle.load(open(f'{working_dir}/saved_models/calorie_burnt_model.sav', 'rb'))
+calorie_model = pickle.load(open(f'{working_dir}/saved_models/calorie_model.sav', 'rb'))
 
 # Page title
 st.title('Calorie Burnt Prediction')
