@@ -12,7 +12,16 @@ st.set_page_config(
 
 # Load the saved model
 working_dir = os.path.dirname(os.path.abspath(__file__))
-calorie_model = pickle.load(open(f'{working_dir}/saved_models/calorie_model.sav', 'rb'))
+model_path = f'{working_dir}/saved_models/calorie_model.sav'
+
+# Debugging: Print the model path
+print(f"Loading model from: {model_path}")
+
+try:
+    calorie_model = pickle.load(open(model_path, 'rb'))
+except FileNotFoundError:
+    st.error("Model file not found. Please ensure 'calorie_model.sav' exists in the 'saved_models' directory.")
+    st.stop()
 
 # Page title
 st.title('Calorie Burnt Prediction')
