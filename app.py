@@ -12,14 +12,14 @@ st.set_page_config(
 )
 
 # Load the saved model
-model_path = 'saved_models/calorie.joblib'
+model_path = 'saved_models/calorie_model.pkl'
 # Debugging: Print the model path
 print(f"Loading model from: {model_path}")
 
 try:
-    calorie_model = joblib.load(model_path)
+    calorie_model = pickle.load(model_path)
 except FileNotFoundError:
-    st.error("Model file not found. Please ensure 'calorie.joblib' exists in the 'saved_models' directory.")
+    st.error("Model file not found. Please ensure 'calorie_model.pkl' exists in the 'saved_models' directory.")
     st.stop()
 
 # Page title
