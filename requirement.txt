@@ -6,3 +6,4 @@ seaborn
 streamlit
 streamlit_option_menu
 xgboost
+pickle

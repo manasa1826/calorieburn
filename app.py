@@ -1,75 +1,46 @@
 import streamlit as st
-import numpy as np
 import pickle
 import os
+import numpy as np
 
-# Set page configuration
-st.set_page_config(
-    page_title="Calorie Burnt Prediction",
-    layout="wide",
-    page_icon="🔥"
-)
+# Title of the app
+st.title("Calorie Burn Prediction App")
 
-# Load the saved model
-working_dir = os.path.dirname(os.path.abspath(__file__))
-calorie_model = pickle.load(open(f'{working_dir}/saved_models/calorie_model.sav', 'rb'))
+# Load the model
+working_dir = os.getcwd()
+model_path = os.path.join(working_dir, 'saved_models', 'calorie_model.sav')
 
-# Page title
-st.title('Calorie Burnt Prediction')
+try:
+    # Load the pre-trained model
+    calorie_model = pickle.load(open(model_path, 'rb'))
+    st.success("Model loaded")
+except Exception as e:
+    st.error(f"Error loading model: {e}")
+    st.stop()
 
-# Getting the input data from the user
-col1, col2 = st.columns(2)
+# Input fields for user data
+st.sidebar.header("Input Features")
 
-with col1:
-    # Gender input
-    gender = st.selectbox('Gender', ('Male', 'Female'))
-    gender = 1 if gender == 'Male' else 0
+# Define input fields based on your model's features
+age = st.sidebar.number_input("Age", min_value=1, max_value=120, value=30)
+gender = st.sidebar.selectbox("Gender", options=[0, 1], format_func=lambda x: "Male" if x == 0 else "Female")
+height = st.sidebar.number_input("Height (cm)", min_value=50, max_value=250, value=170)
+weight = st.sidebar.number_input("Weight (kg)", min_value=30, max_value=200, value=70)
+heart_rate = st.sidebar.number_input("Heart Rate (bpm)", min_value=40, max_value=200, value=80)
+body_temp = st.sidebar.number_input("Body Temperature (°C)", min_value=35.0, max_value=42.0, value=36.5)
+activity_level = st.sidebar.number_input("Activity Level (1-5)", min_value=1, max_value=5, value=3)
 
-    # Age input
-    age = st.number_input('Age', min_value=1, max_value=120, value=25)
+# Create input data array
+input_data = (age, gender, height, weight, heart_rate, body_temp, activity_level)
 
-    # Height input with unit selection
-    height_unit = st.selectbox('Height Unit', ('cm', 'feet'))
-    height = st.number_input('Height', min_value=0.0, value=170.0)
-    if height_unit == 'feet':
-        height = height * 30.48  # Convert feet to cm
+# Convert input data to numpy array and reshape
+input_data_as_numpy_array = np.asarray(input_data)
+input_data_reshaped = input_data_as_numpy_array.reshape(1, -1)
 
-    # Weight input with unit selection
-    weight_unit = st.selectbox('Weight Unit', ('kg', 'lbs'))
-    weight = st.number_input('Weight', min_value=0.0, value=70.0)
-    if weight_unit == 'lbs':
-        weight = weight * 0.453592  # Convert lbs to kg
-
-with col2:
-    # Duration input in minutes
-    duration = st.number_input('Duration (minutes)', min_value=0, value=30)
-
-    # Heart Rate input with validation
-    heart_rate = st.number_input('Heart Rate (bpm)', min_value=67, max_value=128, value=80)
-
-    # Body Temperature input with unit selection
-    temp_unit = st.selectbox('Body Temperature Unit', ('Celsius', 'Fahrenheit'))
-    body_temp = st.number_input('Body Temperature', min_value=0.0, value=37.0)
-    if temp_unit == 'Fahrenheit':
-        body_temp = (body_temp - 32) * 5/9  # Convert Fahrenheit to Celsius
-
-# Code for Prediction
-calorie_diagnosis = ''
-
-# Creating a button for Prediction
-if st.button('Calorie Burnt Test Result'):
+# Make prediction
+if st.sidebar.button("Predict Calorie Burn"):
     try:
-        # Prepare user input for the model
-        user_input = [gender, age, height, weight, duration, heart_rate, body_temp]
-        user_input = np.asarray(user_input).reshape(1, -1)
-
-        # Make prediction using the model
-        calorie_prediction = calorie_model.predict(user_input)
-
-        # Display result based on prediction
-        calorie_diagnosis = f'The estimated calories burnt are: {calorie_prediction[0]:.2f} kcal'
-
+        prediction = calorie_model.predict(input_data_reshaped)
+        st.success(f"Predicted Calorie Burn: {prediction[0]:.2f} calories")
     except Exception as e:
-        st.error(f"An error occurred: {e}")
-
-st.success(calorie_diagnosis)
+        st.error(f"Error making prediction: {e}")
