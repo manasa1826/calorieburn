@@ -12,7 +12,6 @@ st.set_page_config(
 )
 
 # Load the saved model
-working_dir = os.path.dirname(os.path.abspath(__file__))
 model_path = 'saved_models/calorie.joblib'
 # Debugging: Print the model path
 print(f"Loading model from: {model_path}")
