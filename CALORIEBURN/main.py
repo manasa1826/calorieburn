@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+# Define input model
 class ModelInput(BaseModel): 
     Gender: int 
     Age: int  
@@ -16,15 +17,9 @@ class ModelInput(BaseModel):
     Heart_Rate: float
     Body_Temp: float
 
-# Determine the absolute path to the saved model
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(BASE_DIR, 'saved_models', 'calorie_model.pkl')
-
-# Debugging: Print the actual path where it looks for the model
-print(f"Looking for model at: {model_path}")
-
 # Load the trained model safely
-calorie_model = None
+model_path = os.path.join(os.getcwd(), 'CALORIEBURN', 'saved_models', 'calorie_model.pkl')
+
 if os.path.exists(model_path):
     try:
         with open(model_path, 'rb') as f:
@@ -32,9 +27,17 @@ if os.path.exists(model_path):
         print("✅ Model loaded successfully.")
     except Exception as e:
         print(f"❌ Error loading model: {e}")
+        calorie_model = None
 else:
-    print(f"❌ Model file not found at {model_path}")
+    print(f"❌ Model file not found at: {model_path}")
+    calorie_model = None
 
+# Root route to check if API is running
+@app.get("/")
+def home():
+    return {"message": "Calorie Burn API is running! Use /calorie_burn for predictions."}
+
+# Prediction endpoint
 @app.post('/calorie_burn')
 def predict_calorie(input_parameters: ModelInput):
     if calorie_model is None:
