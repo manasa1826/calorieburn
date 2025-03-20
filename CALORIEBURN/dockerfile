@@ -1,11 +1,17 @@
+# Use Python 3.10 slim as the base image
 FROM python:3.10-slim
 
-copy . /app
-
+# Set the working directory inside the container
 WORKDIR /app
 
-RUN pip install -r requirement.txt
+# Copy all files from the current directory to /app in the container
+COPY . /app
 
-EXPOSE 80
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+# Expose port 5000 for the application
+EXPOSE 5000
+
+# Command to run the application on port 5000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]
